@@ -176,6 +176,10 @@ class AdbPairingService : Service() {
             text = getString(R.string.notification_adb_pairing_succeed_text)
 
             stopSearch()
+
+            if (ShizukuSettings.isAutoStartWirelessAdbEnabled()) {
+                autoStartAdbConnect()
+            }
         } else {
             title = getString(R.string.notification_adb_pairing_failed_title)
 
@@ -322,6 +326,23 @@ class AdbPairingService : Service() {
             .setContentTitle(getString(R.string.notification_adb_pairing_working_title))
             .setSmallIcon(R.drawable.ic_system_icon)
             .build()
+    }
+
+    private fun autoStartAdbConnect() {
+        var connectMdns: AdbMdns? = null
+        connectMdns = AdbMdns(this, AdbMdns.TLS_CONNECT) { port ->
+            if (port > 0) {
+                connectMdns?.stop()
+                val intent = Intent(this, moe.shizuku.manager.starter.StarterActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    putExtra(moe.shizuku.manager.starter.StarterActivity.EXTRA_IS_ROOT, false)
+                    putExtra(moe.shizuku.manager.starter.StarterActivity.EXTRA_HOST, "127.0.0.1")
+                    putExtra(moe.shizuku.manager.starter.StarterActivity.EXTRA_PORT, port)
+                }
+                startActivity(intent)
+            }
+        }
+        connectMdns.start()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
