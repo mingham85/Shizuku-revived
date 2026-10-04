@@ -25,6 +25,7 @@ public class ShizukuSettings {
     public static final String NIGHT_MODE = "night_mode";
     public static final String LANGUAGE = "language";
     public static final String KEEP_START_ON_BOOT = "start_on_boot";
+    public static final String AUTO_START_WIRELESS_ADB = "auto_start_wireless_adb";
 
     private static SharedPreferences sPreferences;
 
@@ -99,5 +100,13 @@ public class ShizukuSettings {
             return Locale.getDefault();
         }
         return Locale.forLanguageTag(tag);
+    }
+
+    public static boolean isAutoStartWirelessAdbEnabled() {
+        return getPreferences().getBoolean(AUTO_START_WIRELESS_ADB, true);
+    }
+
+    public static void setAutoStartWirelessAdbEnabled(boolean enabled) {
+        getPreferences().edit().putBoolean(AUTO_START_WIRELESS_ADB, enabled).apply();
     }
 }
